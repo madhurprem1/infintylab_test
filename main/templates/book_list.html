@@ -1,0 +1,51 @@
+{% load get_attribute %}
+<html>
+
+<head>
+
+    <title>Books List</title>
+</head>
+
+    <body>
+        <a href="../authors/">View Authors</a> <br/><br/><br/>
+
+        <a href="../logout/" style="float:right">Logout</a>
+
+        <a href="../add-book/">Add a book</a> <br/><br/><br/>
+
+        <table>
+
+            <thead>
+                <th>Sr. No</th>
+                <th>Book Name</th>
+                <th>Author Name</th>
+                <th>Publication</th>
+                <th>Actions</th>
+            </thead>
+
+            <tbody>
+
+                {% for book in books %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ book.name }}</td>
+                    <td>{% for author in book.authors.all %} {% if author %}{{ author.name }},{% endif %} {% endfor %}</td>
+                    <td>{{ book.publication }}</td>
+
+                    <td>
+                        <a href="./edit-book/{{ book.id }}/">EDIT</a> ----
+                        <a href="./delete-book/{{ book.id }}/">Delete</a>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </body>
+
+</html>

@@ -1,0 +1,14 @@
+<html>
+
+<head>
+    <title>Delete Author</title>
+</head>
+
+<body>
+    <a href="../logout/" style="float:right">Logout</a>
+    Are you sure you want to delete this author "{{author.name}}"?
+    <br/>
+    <form action="#" method="POST">{% csrf_token %}<button type="submit">Yes</button></form> &nbsp;&nbsp; <a href="/../authors/">No</a>
+</body>
+
+</html>

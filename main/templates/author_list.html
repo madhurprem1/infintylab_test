@@ -1,0 +1,49 @@
+
+<html>
+
+<head>
+
+    <title>Author List</title>
+</head>
+
+    <body>
+        <a href="../books/">View Books</a> <br/><br/><br/>
+
+        <a href="../logout/" style="float:right">Logout</a>
+
+        <a href="../add-author/">Add an Author</a> <br/><br/><br/>
+
+        <table>
+
+            <thead>
+                <th>Sr. No</th>
+                <th>Author Name</th>
+                <th>Gender</th>
+                <th>Actions</th>
+            </thead>
+
+            <tbody>
+
+                {% for author in authors %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ author.name }}</td>
+                    <td>{{ author.gender }}</td>
+
+                    <td>
+                        <a href="./edit-author/{{ author.id }}/">EDIT</a> ----
+                        <a href="./delete-author/{{ author.id }}/">Delete</a>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </body>
+
+</html>
