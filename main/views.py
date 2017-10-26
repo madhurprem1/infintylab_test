@@ -13,6 +13,70 @@ class MyLoginRequiredMixin(LoginRequiredMixin):
     redirect_field_name = 'redirect_to'
 
 
+class MyEditView(MyLoginRequiredMixin, View):
+    model = None
+    model_form = None
+    redirect_to = ''
+    template_name = ''
+
+    def get(self, request, id):
+        instance = self.model.objects.get(id=id)
+        form = self.model_form(instance=instance)
+
+        return render(request, 'book_add.html', {'form': form})
+
+    def post(self, request, id):
+        instance = self.model.objects.get(id=id)
+        form = self.model_form(request.POST, instance=instance)
+        form.id = id
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(self.redirect_to)
+
+        return render(request, self.template_name, {'form': form})
+
+
+class MyAddView(MyLoginRequiredMixin, View):
+    model = None
+    model_form = None
+    redirect_to = ''
+    template_name = ''
+
+    def get(self, request):
+        form = self.model_form()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.model_form(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(self.redirect_to)
+
+        return render(request, self.template_name, {'form': form})
+
+
+class MyDeleteView(MyLoginRequiredMixin, View):
+    model = None
+    model_form = None
+    redirect_to = ''
+    template_name = 'delete.html'
+
+    def get(self, request, id):
+        instance = self.model.objects.get(id=id)
+
+        return render(request, self.template_name, {
+            'name': instance.name,
+            'redirect_to': self.redirect_to,
+            'model_name': self.model._meta.model_name
+        })
+
+    def post(self, request, id):
+        instance = self.model.objects.get(id=id)
+        instance.delete()
+
+        return HttpResponseRedirect(self.redirect_to)
+
+
 class BookListView(MyLoginRequiredMixin, View):
 
     def get(self, request):
@@ -23,52 +87,24 @@ class BookListView(MyLoginRequiredMixin, View):
         })
 
 
-class BookAddView(MyLoginRequiredMixin, View):
-
-    def get(self, request):
-        form = BookForm()
-        return render(request, 'book_add.html', {'form': form})
-
-    def post(self, request):
-        form = BookForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/books/')
-
-        return render(request, 'book_add.html', {'form': form})
+class BookAddView(MyAddView):
+    model = Book
+    model_form = BookForm
+    redirect_to = '/books/'
+    template_name = 'book_add.html'
 
 
-class BookEditView(MyLoginRequiredMixin, View):
-
-    def get(self, request, id):
-        book = Book.objects.get(id=id)
-        form = BookForm(instance=book)
-
-        return render(request, 'book_add.html', {'form': form})
-
-    def post(self, request, id):
-        book = Book.objects.get(id=id)
-        form = BookForm(request.POST, instance=book)
-        form.id = id
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/books/')
-
-        return render(request, 'book_add.html', {'form': form})
+class BookEditView(MyEditView):
+    model = Book
+    model_form = BookForm
+    redirect_to = '/books/'
+    template_name = 'book_add.html'
 
 
-class BookDeleteView(MyLoginRequiredMixin, View):
-
-    def get(self, request, id):
-        book = Book.objects.get(id=id)
-
-        return render(request, 'book_delete.html', {'book': book})
-
-    def post(self, request, id):
-        book = Book.objects.get(id=id)
-        book.delete()
-
-        return HttpResponseRedirect('/books/')
+class BookDeleteView(MyDeleteView):
+    model = Book
+    model_form = BookForm
+    redirect_to = '/books/'
 
 
 class AuthorListView(MyLoginRequiredMixin, View):
@@ -81,50 +117,21 @@ class AuthorListView(MyLoginRequiredMixin, View):
         })
 
 
-class AuthorAddView(MyLoginRequiredMixin, View):
-
-    def get(self, request):
-        form = AuthorForm()
-        return render(request, 'author_add.html', {'form': form})
-
-    def post(self, request):
-        form = AuthorForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/authors/')
-
-        return render(request, 'author_add.html', {'form': form})
+class AuthorAddView(MyAddView):
+    model = Author
+    model_form = AuthorForm
+    redirect_to = '/authors/'
+    template_name = 'author_add.html'
 
 
-class AuthorEditView(MyLoginRequiredMixin, View):
-
-    def get(self, request, id):
-        author = Author.objects.get(id=id)
-        form = AuthorForm(instance=author)
-
-        return render(request, 'author_add.html', {'form': form})
-
-    def post(self, request, id):
-        author = Author.objects.get(id=id)
-        form = AuthorForm(request.POST, instance=author)
-        form.id = id
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/authors/')
-
-        return render(request, 'author_add.html', {'form': form})
+class AuthorEditView(MyEditView):
+    model = Author
+    model_form = AuthorForm
+    redirect_to = '/authors/'
+    template_name = 'author_add.html'
 
 
-class AuthorDeleteView(MyLoginRequiredMixin, View):
-
-    def get(self, request, id):
-        author = Author.objects.get(id=id)
-
-        return render(request, 'author_delete.html', {'author': author})
-
-    def post(self, request, id):
-        author = Author.objects.get(id=id)
-        author.delete()
-
-        return HttpResponseRedirect('/authors/')
-
+class AuthorDeleteView(MyDeleteView):
+    model = Author
+    model_form = AuthorForm
+    redirect_to = '/authors/'
